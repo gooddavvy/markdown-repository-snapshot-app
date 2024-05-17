@@ -44,28 +44,36 @@ def main():
     # for ignore_item in st.session_state["ignore_list"]:
     #     st.write(ignore_item)
 
+    global ignore_item
     ignore_item = st.text_input(label="New Ignore Item",
                                 key="ignore_item",
                                 placeholder=random.choice([".github", "README.md", "remote"]))
-
-    global x
-    x = False
+    
+    # global x
+    # x = False
     def add_ignore_item():
-        global x
-        if x is True:
-            if ignore_item != "":
-                append_ignore_item(ignore_item)
-                append_ignore_item(ignore_item)
+        import time
+        time.sleep(0.5)
+        # global x
+        # if x is True:
+        if st.session_state["ignore_item"] != "":
+                append_ignore_item(st.session_state["ignore_item"])
+                # st.session_state["ignore_item"] = ""
 
-                x = False
-                st.rerun()
-        else:
-            x = True
-            add_ignore_item()
+                # x = False
+                # st.rerun()
+        # else:
+        #     # x = True
+        #     add_ignore_item()
 
 
 
-    st.button(label="Add Ignore Item", on_click=add_ignore_item)
+    # add_ignore_item()  # Call the function directly to handle the UI update
+
+    st.button(label="Add Ignore Item",
+              # on_click=lambda: append_ignore_item(st.session_state["ignore_item"])
+              on_click=add_ignore_item
+             )
 
     if st.button("Generate Markdown"):
         ignore_list = st.session_state["ignore_list"]
