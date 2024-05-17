@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Repository Snapshot Application</title>
+    <style>
+        body {
+            background-color: #0e1117;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #161b22;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #444c56;
+            border-radius: 5px;
+            background-color: #0e1117;
+            color: #ffffff;
+        }
+        input::placeholder {
+            color: #6c757d;
+        }
+        button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #1a73e8;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        button:hover {
+            background-color: #1669c1;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+        pre {
+            background-color: #0e1117;
+            color: #ffffff;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #f4b400;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+        a:hover {
+            background-color: #e69a00;
+        }
+        .hidden {
+            display: none;
+        }
+        .disabled, .disabled:hover {
+            background-color: #0e1117;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Markdown Repository Snapshot Application</h1>
+        <div>
+            <label for="repository_url">Repository URL</label>
+            <input type="text" id="repository_url" name="repository_url" placeholder="https://github.com/spf13/viper" />
+        </div>
+        <div>
+            <label for="ignore_item">New Ignore Item</label>
+            <input type="text" id="ignore_item" name="ignore_item" placeholder=".github, README.md, remote" />
+            <button id="add_ignore_item">Add Ignore Item</button>
+        </div>
+        <div>
+            <p><b id="list_label" class="hidden">Current ignore list:</b></p>
+            <ul id="ignore_list"></ul>
+        </div>
+        <button id="generate_markdown">Generate Markdown</button>
+        <div id="response_section" class="hidden">
+            <p><b>Access response content below...</b></p>
+            <pre id="response_json" class="hidden"></pre>
+            <a id="download_link" download="output.md" class="hidden">Download Markdown</a>
+        </div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

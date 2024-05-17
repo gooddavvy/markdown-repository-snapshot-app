@@ -1,4 +1,4 @@
-# markdown-directory-snapshot-app
+# markdown-repository-snapshot-app
 
 Description: An app that you input a GitHub repository's URL into, alongside ignore files&folders, and it outputs a downloadable `output.md` file
 
@@ -9,7 +9,6 @@ Phase: BETA
 **Need to work on:**
 
 - [x] Making it work via GitHub API and GitHub API token
-- [ ] Allowing the user to provide their own GitHub API token
 - [ ] Doing it via web scraping
 
 **Feel free to look at the code--the app is all open-source!**
@@ -54,10 +53,10 @@ After that, open another one, and run:
 ```
 cd frontend
 pip install -r requirements.txt
-python -m streamlit run app.py
+python app.py
 ```
 
-If it works as expected, it should automatically open `http://localhost:8501` in your default browser.
+If everything works as expected, it should automatically open `http://localhost:8501` in your default browser.
 
 # Important considerations
 

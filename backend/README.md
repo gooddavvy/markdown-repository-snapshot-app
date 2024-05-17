@@ -1,4 +1,4 @@
-# Go_markdown-directory-snapshot backend
+# Go_markdown-repository-snapshot backend
 
 Description: Snapshot a repository & save non-excluded results of snapshot in a generated markdown file
 Current Phase: BETA
@@ -6,7 +6,6 @@ Current Phase: BETA
 **Need to work on:**
 
 - [x] Making it work via GitHub API and GitHub API token
-- [ ] Allowing the user to provide their own GitHub API token
 - [ ] Doing it via web scraping
 
 # What is this?
