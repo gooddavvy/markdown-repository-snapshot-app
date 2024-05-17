@@ -37,6 +37,7 @@ Then, open a VS-Code terminal in the workspace, and run:
 
 ```
 cd backend
+go mod tidy
 go run main.go
 ```
 
