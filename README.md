@@ -1,8 +1,16 @@
 # markdown-directory-snapshot-app
 
 Description: An app that you input a GitHub repository's link into, alongside ignore files&folders, and it outputs a downloadable `output.md` file
+
 Release Date: May 17, 2024
+
 Phase: BETA
+
+**Need to work on:**
+
+- [x] Making it work via GitHub API and GitHub API token
+- [ ] Allowing the user to provide their own GitHub API token
+- [ ] Doing it via web scraping
 
 **Feel free to look at the code--the app is all open-source!**
 
