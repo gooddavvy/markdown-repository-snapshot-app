@@ -44,6 +44,7 @@ go run main.go
 After that, open another one, and run:
 
 ```
+cd frontend
 pip install -r requirements.txt
 python -m streamlit run app.py
 ```
