@@ -22,45 +22,53 @@ def genMd(repository_url, ignore_list):
     # Return the response
     return res
 
+
 def main():
     st.title("Markdown Repository Snapshot Application")
     use_json = True
 
-    # Input for repository URL
+    # Input for repository URL and declaration ignore list
     repository_url = st.text_input(label="Repository URL",
                                    placeholder="https://github.com/spf13/viper")
 
     if "ignore_list" not in st.session_state:
         st.session_state["ignore_list"] = []
 
-    if "generate_md" not in st.session_state:
-        st.session_state["generate_md"] = False
+    if "ignore_item" not in st.session_state:
+        st.session_state["ignore_item"] = ""
 
-    def add_ignore_item():
-        ignore_item = st.session_state.get("ignore_item_input", "")
-        if ignore_item:
-            st.session_state.ignore_list.append(ignore_item)
-            st.session_state["ignore_item_input"] = ""
+    def append_ignore_item(ignore_item):
+            st.session_state["ignore_list"].append(ignore_item)
 
-    def set_generate_md():
-        st.session_state["generate_md"] = True
+    st.write("Current Ignore List:", st.session_state["ignore_list"])
+    # for ignore_item in st.session_state["ignore_list"]:
+    #     st.write(ignore_item)
 
-    # Input for ignore item and add button
     ignore_item = st.text_input(label="New Ignore Item",
-                                key="ignore_item_input",
+                                key="ignore_item",
                                 placeholder=random.choice([".github", "README.md", "remote"]))
 
-    st.button("Add Ignore Item", on_click=add_ignore_item)
+    global x
+    x = False
+    def add_ignore_item():
+        global x
+        if x is True:
+            if ignore_item != "":
+                append_ignore_item(ignore_item)
+                append_ignore_item(ignore_item)
 
-    # Display the ignore list items
-    for item in st.session_state.ignore_list:
-        st.write(item)
+                x = False
+                st.rerun()
+        else:
+            x = True
+            add_ignore_item()
 
-    st.button("Generate Markdown", on_click=set_generate_md)
 
-    if st.session_state["generate_md"]:
-        # Call the genMd function
-        ignore_list = st.session_state.ignore_list
+
+    st.button(label="Add Ignore Item", on_click=add_ignore_item)
+
+    if st.button("Generate Markdown"):
+        ignore_list = st.session_state["ignore_list"]
         response = genMd(repository_url, ignore_list)
         res = response.text
 
@@ -77,6 +85,7 @@ def main():
         if use_json:
             st.json(res)
         else:
+            # Create a downloadable link for the raw text response
             st.download_button(
                 label="Download Markdown",
                 data=res,
