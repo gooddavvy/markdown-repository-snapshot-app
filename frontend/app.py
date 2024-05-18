@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import requests
+import webbrowser
 import json
 
 app = Flask(__name__)
@@ -42,4 +43,5 @@ def generate():
 
 
 if __name__ == "__main__":
+    webbrowser.open_new_tab("http://localhost:8501/")
     app.run(debug=True, host="0.0.0.0", port=8501)
