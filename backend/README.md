@@ -2,12 +2,12 @@
 
 Description: Snapshot a repository & save non-excluded results of snapshot in a generated markdown file
 
-Current Phase: BETA
+Current Phase: Completed
 
 **Need to work on:**
 
 - [x] Making it work via GitHub API and GitHub API token
-- [ ] Doing it via web scraping
+- [x] Doing it via getting and unzipping zip file for repository
 
 # What is this?
 

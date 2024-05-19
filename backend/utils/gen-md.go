@@ -1,25 +1,18 @@
 package utils
 
 import (
-	"context"
-
-	"encoding/base64"
-
+	"archive/zip"
 	"fmt"
-
+	"io"
+	"io/ioutil"
+	"net/http"
 	"net/url"
-
+	"os"
+	"path/filepath"
 	"strings"
-
-	"github.com/google/go-github/v61/github"
-
-	"github.com/spf13/viper"
-
-	"golang.org/x/oauth2"
 )
 
 // Parse the GitHub repository URL and return the owner and repository name
-
 func parseGitHubURL(repoURL string) (owner, repo string, err error) {
 	u, err := url.Parse(repoURL)
 	if err != nil {
@@ -27,205 +20,170 @@ func parseGitHubURL(repoURL string) (owner, repo string, err error) {
 	}
 
 	parts := strings.Split(strings.Trim(u.Path, "/"), "/")
-
 	if len(parts) >= 2 {
 		return parts[0], parts[1], nil
 	}
-
 	return "", "", fmt.Errorf("invalid GitHub repository URL")
+}
+
+func downloadRepoAsZip(owner, repo string) (string, error) {
+	urls := []string{
+		fmt.Sprintf("https://github.com/%s/%s/archive/refs/heads/main.zip", owner, repo),
+		fmt.Sprintf("https://github.com/%s/%s/archive/refs/heads/master.zip", owner, repo),
+	}
+
+	var resp *http.Response
+	var err error
+	for _, url := range urls {
+		resp, err = http.Get(url)
+		if err != nil {
+			return "", err
+		}
+		if resp.StatusCode == http.StatusOK {
+			break
+		}
+		resp.Body.Close()
+		resp = nil
+	}
+
+	if resp == nil {
+		return "", fmt.Errorf("failed to download repo: 404 Not Found")
+	}
+	defer resp.Body.Close()
+
+	tmpFile, err := ioutil.TempFile("", "*.zip")
+	if err != nil {
+		return "", err
+	}
+	defer tmpFile.Close()
+
+	_, err = io.Copy(tmpFile, resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return tmpFile.Name(), nil
+}
+
+func unzip(src string, dest string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		fpath := filepath.Join(dest, f.Name)
+
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fpath, os.ModePerm)
+			continue
+		}
+
+		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return err
+		}
+
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(outFile, rc)
+		outFile.Close()
+		rc.Close()
+
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func GenerateMarkdownFile(repoUrl string, ignoreList []string) (string, error) {
 	var markdownFile string
 
-	// Start working
-	ctx := context.Background()
-	token, ok := viper.Get("GITHUB_API_TOKEN").(string)
-
-	if !ok || token == "" {
-
-		return markdownFile, fmt.Errorf("GITHUB_API_TOKEN not set or empty")
-
-	}
-
-	ts := oauth2.StaticTokenSource(
-
-		&oauth2.Token{AccessToken: token},
-	)
-
-	tc := oauth2.NewClient(ctx, ts)
-
-	client := github.NewClient(tc)
-
 	owner, repo, err := parseGitHubURL(repoUrl)
-
 	if err != nil {
-		fmt.Println("Error parsing URL:", err)
 		return markdownFile, err
 	}
 
-	// Recursively fetch all files and folders, excluding those in the ignore list
+	zipPath, err := downloadRepoAsZip(owner, repo)
+	if err != nil {
+		return markdownFile, err
+	}
+	defer os.Remove(zipPath)
+
+	tempDir, err := os.MkdirTemp("", "repo")
+	if err != nil {
+		return markdownFile, err
+	}
+	defer os.RemoveAll(tempDir)
+
+	err = unzip(zipPath, tempDir)
+	if err != nil {
+		return markdownFile, err
+	}
+
+	// Adjust the path to the unzipped content, which usually has a top-level directory
+	files, err := os.ReadDir(tempDir)
+	if err != nil || len(files) == 0 {
+		return markdownFile, fmt.Errorf("failed to read unzipped contents")
+	}
+
+	// Assuming the first directory is the repo content directory
+	repoContentDir := filepath.Join(tempDir, files[0].Name())
 
 	var markdownContents []string
+	err = filepath.Walk(repoContentDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 
-	err = fetchDirectoryContents(ctx, client, owner, repo, "", &markdownContents, ignoreList)
+		relativePath := strings.TrimPrefix(path, repoContentDir+string(os.PathSeparator))
 
+		if info.IsDir() || isIgnored(relativePath, ignoreList) {
+			return nil
+		}
+
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		fileMarkdown := fmt.Sprintf("### %s\n\n```%s\n%s\n```", relativePath, getFileExtension(relativePath), string(content))
+		markdownContents = append(markdownContents, fileMarkdown)
+
+		return nil
+	})
 	if err != nil {
-
 		return markdownFile, err
-
 	}
 
 	markdownFile = strings.Join(markdownContents, "\n\n")
-
 	return markdownFile, nil
-
-}
-
-func fetchDirectoryContents(ctx context.Context, client *github.Client, owner, repo, path string, markdownContents *[]string, ignoreList []string) error {
-
-	opt := &github.RepositoryContentGetOptions{}
-
-	contents, dirContents, _, err := client.Repositories.GetContents(ctx, owner, repo, path, opt)
-
-	if err != nil {
-
-		fmt.Println("Error fetching contents:", err)
-
-		return err
-
-	}
-
-	// Check if we received a single file or a directory
-
-	if contents != nil {
-
-		// Single file
-
-		if !isIgnored(contents.GetPath(), ignoreList) {
-
-			if contents.GetType() == "file" {
-
-				fileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, contents.GetPath(), opt)
-
-				if err != nil {
-
-					return err
-
-				}
-
-				// Decode base64 content
-
-				decodedContent, err := base64.StdEncoding.DecodeString(*fileContent.Content)
-
-				if err != nil {
-
-					return err
-
-				}
-
-				// Append file content in markdown format
-
-				fileMarkdown := fmt.Sprintf("### %s\n```%s\n%s```", contents.GetPath(), getFileExtension(contents.GetPath()), string(decodedContent))
-
-				*markdownContents = append(*markdownContents, fileMarkdown)
-
-			}
-
-		} else {
-
-			// fmt.Println("Ignoring file:", contents.GetPath())
-
-		}
-
-	} else if dirContents != nil {
-
-		// Directory
-
-		for _, content := range dirContents {
-
-			if !isIgnored(content.GetPath(), ignoreList) {
-
-				if content.GetType() == "file" {
-
-					fileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, content.GetPath(), opt)
-
-					if err != nil {
-
-						return err
-
-					}
-
-					// Decode base64 content
-
-					decodedContent, err := base64.StdEncoding.DecodeString(*fileContent.Content)
-
-					if err != nil {
-
-						return err
-
-					}
-
-					// Append file content in markdown format
-
-					fileMarkdown := fmt.Sprintf("### %s\n\n```%s\n%s\n```", content.GetPath(), getFileExtension(content.GetPath()), string(decodedContent))
-
-					*markdownContents = append(*markdownContents, fileMarkdown)
-
-				} else if content.GetType() == "dir" {
-
-					err := fetchDirectoryContents(ctx, client, owner, repo, content.GetPath(), markdownContents, ignoreList)
-
-					if err != nil {
-
-						return err
-
-					}
-
-				}
-
-			} else {
-
-				// fmt.Println("Ignoring directory or file:", content.GetPath())
-
-			}
-
-		}
-
-	}
-
-	return nil
-
 }
 
 func isIgnored(path string, ignoreList []string) bool {
-
 	for _, ignore := range ignoreList {
-
 		if strings.HasPrefix(path, ignore) {
-
 			return true
-
 		}
-
 	}
-
 	return false
-
 }
 
-func getFileExtension(filename string) string {
-
-	parts := strings.Split(filename, ".")
-
+func getFileExtension(path string) string {
+	parts := strings.Split(path, ".")
 	if len(parts) > 1 {
-
 		return parts[len(parts)-1]
-
 	}
-
 	return ""
-
 }
 
 /* package utils

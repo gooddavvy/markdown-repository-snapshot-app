@@ -4,12 +4,12 @@ Description: An app that you input a GitHub repository's URL into, alongside ign
 
 Release Date: May 17, 2024
 
-Phase: BETA
+Phase: Completed
 
 **Need to work on:**
 
 - [x] Making it work via GitHub API and GitHub API token
-- [ ] Doing it via web scraping
+- [x] Doing it via getting and unzipping zip file for repository
 
 **Feel free to look at the code--the app is all open-source!**
 
@@ -19,8 +19,6 @@ Phase: BETA
 
 First, ensure you have installed [GoLang](https://go.dev/dl/) and [Python](https://python.org/downloads/).
 
-Then, generate a [new GitHub API key](https://github.com/settings/tokens/new) if you haven't already.
-
 After this, you can open your terminal, navigate to the desired directory, and run:
 
 ```
@@ -28,15 +26,6 @@ git clone https://github.com/gooddavvy/markdown-repository-snapshot-app
 cd markdown-repository-snapshot-app
 code .
 ```
-
-Then, in the `backend` folder, add a `.env` file:
-
-```env
-GITHUB_API_TOKEN = your_github_api_token
-
-```
-
-Be sure to replace `your_github_api_token` with your actual GitHub API token.
 
 **Running it:**
 
@@ -58,6 +47,6 @@ python app.py
 
 If everything works as expected, it should automatically open `http://localhost:8501` in your default browser.
 
-# Important considerations
+# Note
 
-This application is still in its BETA phase, so you might not want to clone this repository just yet. Please feel free to talk in the [Issues Section](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues)!
+If you encounter any issues, please feel free to talk in the [Issues Section](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues)!
