@@ -52,4 +52,4 @@ If everything works as expected, it should automatically open `http://localhost:
 
 # Contributions
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, please create a [new issue](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues/new) or submit a [pull request](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues/new).
+Contributions are welcome! If you find any issues or have suggestions for improvements, please create a [new issue](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues/new) or submit a [pull request](https://github.com/gooddavvy/markdown-repository-snapshot-app/pulls).
