@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -51,7 +50,7 @@ func downloadRepoAsZip(owner, repo string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	tmpFile, err := ioutil.TempFile("", "*.zip")
+	tmpFile, err := os.CreateTemp("", "*.zip")
 	if err != nil {
 		return "", err
 	}
@@ -105,48 +104,59 @@ func unzip(src string, dest string) error {
 	return nil
 }
 
-func GenerateMarkdownFile(repoUrl string, ignoreList []string) (string, error) {
+// GenerateMarkdownFile creates a Markdown file documenting the directory contents
+func GenerateMarkdownFile(repoUrl string, ignoreList []string, folder string) (string, error) {
 	var markdownFile string
+	var dirname string
+
+	dirname = folder
 
 	owner, repo, err := parseGitHubURL(repoUrl)
 	if err != nil {
-		return markdownFile, err
+		return "", err
 	}
 
 	zipPath, err := downloadRepoAsZip(owner, repo)
 	if err != nil {
-		return markdownFile, err
+		return "", err
 	}
 	defer os.Remove(zipPath)
 
 	tempDir, err := os.MkdirTemp("", "repo")
 	if err != nil {
-		return markdownFile, err
+		return "", err
 	}
 	defer os.RemoveAll(tempDir)
 
 	err = unzip(zipPath, tempDir)
 	if err != nil {
-		return markdownFile, err
+		return "", err
 	}
 
 	// Adjust the path to the unzipped content, which usually has a top-level directory
 	files, err := os.ReadDir(tempDir)
 	if err != nil || len(files) == 0 {
-		return markdownFile, fmt.Errorf("failed to read unzipped contents")
+		return "", fmt.Errorf("failed to read unzipped contents")
 	}
 
 	// Assuming the first directory is the repo content directory
 	repoContentDir := filepath.Join(tempDir, files[0].Name())
 
 	var markdownContents []string
-	err = filepath.Walk(repoContentDir, func(path string, info os.FileInfo, err error) error {
+	var walkDir string
+
+	if dirname == "" {
+		walkDir = repoContentDir
+	} else {
+		walkDir = filepath.Join(repoContentDir, dirname)
+	}
+
+	err = filepath.Walk(walkDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
 		relativePath := strings.TrimPrefix(path, repoContentDir+string(os.PathSeparator))
-
 		if info.IsDir() || isIgnored(relativePath, ignoreList) {
 			return nil
 		}
@@ -162,7 +172,7 @@ func GenerateMarkdownFile(repoUrl string, ignoreList []string) (string, error) {
 		return nil
 	})
 	if err != nil {
-		return markdownFile, err
+		return "", err
 	}
 
 	markdownFile = strings.Join(markdownContents, "\n\n")
@@ -186,122 +196,6 @@ func getFileExtension(path string) string {
 	return ""
 }
 
-/* package utils
+/*
 
-
-
-import (
-
- "bufio"
-
- "fmt"
-
- "os"
-
- "path/filepath"
-
- "strings"
-
-)
-
-
-
-// generateMarkdownSnapshot creates a Markdown file documenting the directory contents
-
-func generateMarkdownFile(rootPath string, ignoreList []string) (string, error) {
-
- // Function to determine if the path should be ignored
-
- shouldIgnore := func(path string) bool {
-
-  // Normalize the path to use forward slashes for consistent handling
-
-  normalizedPath := filepath.ToSlash(path)
-
-
-
-  for _, ignore := range ignoreList {
-
-   // Normalize the ignore pattern to use forward slashes
-
-   normalizedIgnore := filepath.ToSlash(ignore)
-
-
-
-   // Match ignore patterns exactly from the root relative path
-
-   trimmedPath := strings.TrimPrefix(normalizedPath, filepath.ToSlash(rootPath)+"/")
-
-   if trimmedPath == normalizedIgnore || strings.HasPrefix(trimmedPath, normalizedIgnore+"/") {
-
-    return true
-
-   }
-
-  }
-
-  return false
-
- }
-
-
-
- // Walk the directory tree
-
- // func WalkDirAndWrite(dir string, info os.FileInfo, err error) error
-
- err = filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
-
-  if err != nil {
-
-   return err
-
-  }
-
-  relativePath, err := filepath.Rel(rootPath, path)
-
-  if err != nil {
-
-   return err
-
-  }
-
-  if shouldIgnore(relativePath) {
-
-   if info.IsDir() {
-
-    return filepath.SkipDir
-
-   }
-
-   return nil
-
-  }
-
-  if !info.IsDir() {
-
-   fileContent, err := os.ReadFile(path)
-
-   if err != nil {
-
-    return err
-
-   }
-
-   // Write the path and file content to the Markdown file
-
-   fmt.Fprintf(writer, "### %s\n```\n%s\n```\n\n", relativePath, fileContent)
-
-  }
-
-  return nil
-
- })
-
-
-
- return err
-
-}
-
-*/
+ */

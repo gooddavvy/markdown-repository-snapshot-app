@@ -9,6 +9,7 @@ Hi and welcome to `markdown-repository-snapshot-app`! 👋👋👋👋👋
 This is an application that you input a GitHub repository's URL into, alongside ignore files&folders, and it outputs a downloadable `output.md` file, which contains this a snapshot of the non-excluded, non-ignored files. Here are the latest updates:
 
 - As of **May 19, 2024**, you do not need a GitHub API key in order to use the application (even though it still requires an internet connection).
+- As of **June 5, 2024**, you can now optionally provide the name of a specific folder in the repository that you'd like to take a snapshot of.
 
 **Feels like magic!**
 
@@ -25,7 +26,7 @@ Phase: Completed (sort of)
 
 **Just a heads up:** If you don't feel like running it, why don't you look at the image below? It really works! And it's really, _really_ fast! (**Trust me**, you can generate the snapshot in a maximum of only 4 seconds, no matter how big the repository is.)
 
-![markdown-repo-snapApp_example](markdown-repo-snapApp_example.png)
+![markdown-repo-snapApp_example](images/markdown-repo-snapApp_example2.png)
 
 # How to use
 

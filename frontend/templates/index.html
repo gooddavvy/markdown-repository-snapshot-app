@@ -137,6 +137,10 @@
             <input type="text" id="repository_url" name="repository_url" placeholder="https://github.com/spf13/viper" />
         </div>
         <div>
+            <label for="directory_name">Directory Name (optional)</label>
+            <input type="text" id="directory_name" name="directory_name" placeholder="internal" />
+        </div>
+        <div>
             <label for="ignore_item">New Ignore Item</label>
             <input type="text" id="ignore_item" name="ignore_item" placeholder=".github, README.md, remote" />
             <button id="add_ignore_item">Add Ignore Item</button>
@@ -151,7 +155,6 @@
             <pre id="response_json" class="hidden"></pre>
             <a id="download_link" download="output.md" class="hidden">Download Markdown</a>
         </div>
-
         <div id="modal" class="modal hidden">
             <div class="modal-content">
                 <span class="close-modal">&times;</span>

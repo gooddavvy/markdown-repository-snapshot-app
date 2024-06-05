@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("generate_markdown").addEventListener("click", function () {
         let generateButton = document.getElementById("generate_markdown");
         let repositoryUrl = document.getElementById("repository_url").value.trim();
+        let directoryName = document.getElementById("directory_name").value.trim();
 
         if (!repositoryUrl || !isValidURL(repositoryUrl)) {
             createModal(`
@@ -72,7 +73,11 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ repository_url: repositoryUrl, ignore_list: ignoreList })
+            body: JSON.stringify({
+                repository_url: repositoryUrl,
+                ignore_list: ignoreList,
+                directory_name: directoryName,
+            })
         })
             .then(response => response.json())
             .then(data => {

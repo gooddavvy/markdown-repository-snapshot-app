@@ -6,10 +6,11 @@ import json
 app = Flask(__name__)
 
 # Function to send request and get response from server
-def genMd(repository_url, ignore_list):
+def genMd(repository_url, ignore_list, directory_name):
     params = {
         "RepositoryURL": repository_url,
-        "IgnoreList": ignore_list
+        "IgnoreList": ignore_list,
+        "DirectoryName": directory_name,
     }
 
     # Convert the dictionary to a JSON string
@@ -34,7 +35,9 @@ def generate():
     data = request.json
     repository_url = data.get("repository_url")
     ignore_list = data.get("ignore_list", [])
-    response = genMd(repository_url, ignore_list)
+    directory_name = data.get("directory_name", "")
+
+    response = genMd(repository_url, ignore_list, directory_name)
     try:
         res = response.json()
     except json.JSONDecodeError:
@@ -42,6 +45,6 @@ def generate():
     return jsonify({"status_code": response.status_code, "response": res})
 
 
-if __name__ == "__main__":
-    webbrowser.open("http://localhost:8501/")
-    app.run(debug=True, host="0.0.0.0", port=8501)
+# if __name__ == "__main__":
+webbrowser.open("http://localhost:8501/")
+app.run(debug=True, host="0.0.0.0", port=8501)
