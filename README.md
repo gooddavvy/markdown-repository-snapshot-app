@@ -1,3 +1,5 @@
+> **Note: This project will soon deprecate the use of Python, and will only use GoLang. In short words, it will soon only use Go.**
+
 # markdown-repository-snapshot-app
 
 Hi and welcome to `markdown-repository-snapshot-app`! 👋👋👋👋👋
@@ -50,6 +52,8 @@ python app.py
 
 If everything works as expected, it should automatically open `http://localhost:8501` in your default browser.
 
-# Contributions
+# Contributions & Stars
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, please create a [new issue](https://github.com/gooddavvy/markdown-repository-snapshot-app/issues/new) or submit a [pull request](https://github.com/gooddavvy/markdown-repository-snapshot-app/pulls).
+
+Also, if you like and/or support this project, please [star it](https://github.com/gooddavvy/markdown-repository-snapshot-app)!

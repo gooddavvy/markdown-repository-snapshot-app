@@ -1,3 +1,5 @@
+> **Note: The backend part will soon be the entire application (GoLang).**
+
 # markdown-repository-snapshot-app backend
 
 ## Description & Details
