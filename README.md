@@ -6,7 +6,7 @@ Hi and welcome to `markdown-repository-snapshot-app`! 👋👋👋👋👋
 
 ## Description & Details
 
-This is an application that you input a GitHub repository's URL into, alongside ignore files&folders, and it outputs a downloadable `output.md` file, which contains this a snapshot of the non-excluded files. Here are the latest updates:
+This is an application that you input a GitHub repository's URL into, alongside ignore files&folders, and it outputs a downloadable `output.md` file, which contains this a snapshot of the non-excluded, non-ignored files. Here are the latest updates:
 
 - As of **May 19, 2024**, you do not need a GitHub API key in order to use the application (even though it still requires an internet connection).
 
