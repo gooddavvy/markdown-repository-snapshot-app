@@ -9,7 +9,7 @@ Hi and welcome to `markdown-repository-snapshot-app`! 👋👋👋👋👋
 This is an application that you input a GitHub repository's URL into, alongside ignore files&folders, and it outputs a downloadable `output.md` file, which contains this a snapshot of the non-excluded, non-ignored files. Here are the latest updates:
 
 - As of **May 19, 2024**, you do not need a GitHub API key in order to use the application (even though it still requires an internet connection).
-- As of **June 5, 2024**, you can now optionally provide the name of a specific folder in the repository that you'd like to take a snapshot of.
+- As of **June 5, 2024**, you can now optionally provide the name of a specific directory in the repository that you'd like to take a snapshot of.
 
 **Feels like magic!**
 
@@ -21,6 +21,8 @@ Phase: Completed (sort of)
 
 - [x] Making it work via GitHub API and GitHub API token
 - [x] Doing it via getting and unzipping zip file for repository (**the magical part**)
+- [x] Allowing users to take a snapshot of a specific directory in the repository
+- [ ] Allowing users to take a snapshot of a specific branch in the repository
 
 **Feel free to look at the code--the app is all open-source!**
 
